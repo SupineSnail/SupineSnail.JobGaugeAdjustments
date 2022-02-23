@@ -20,17 +20,9 @@ jobs:
         git branch --remote --contains | grep origin/main
         
     - name: Set VERSION variable from tag
-      run: echo "VERSION=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
-
-    - name: Setup .NET 5
-      uses: actions/setup-dotnet@v1.9.0
-      with:
-        dotnet-version: 5.0.x
-        
-    - name: Setup .NET 6
-      uses: actions/setup-dotnet@v1.9.0
-      with:
-        dotnet-version: 6.0.x
+      id: get_version
+      run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\/v/}
+      shell: bash
 
     - name: Download Dalamud
       if: "!contains(github.event.head_commit.message, '[stg]')"
@@ -48,10 +40,10 @@ jobs:
       run: dotnet restore src
       
     - name: Build
-      run: dotnet build --no-restore --configuration Release /p:Version=${VERSION} src
+      run: dotnet build --no-restore --configuration Release /p:Version=${{ steps.get_version.outputs.VERSION }} src
       
     - name: Test
-      run: dotnet test --no-build --verbosity normal --configuration Release /p:Version=${VERSION} src
+      run: dotnet test --no-build --verbosity normal --configuration Release /p:Version=${{ steps.get_version.outputs.VERSION }} src
 
     - name: Extract Publish
       run: |
