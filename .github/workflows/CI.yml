@@ -3,13 +3,11 @@ name: .NET CI
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: [windows-2022]
 
     steps:
     - uses: actions/checkout@v2
@@ -22,20 +20,18 @@ jobs:
       uses: actions/setup-dotnet@v1.9.0
       with:
         dotnet-version: 6.0.x
-        
+
     - name: Download Dalamud
       if: "!contains(github.event.head_commit.message, '[stg]')"
       run: |
-        curl https://goatcorp.github.io/dalamud-distrib/latest.zip --output latest.zip
-        mkdir -p ~/Dalamud
-        unzip latest.zip -d ~/Dalamud
-        
+        Invoke-WebRequest -Uri https://goatcorp.github.io/dalamud-distrib/latest.zip -OutFile latest.zip
+        Expand-Archive -Force latest.zip "$env:AppData\XIVLauncher\addon\Hooks\dev"
+
     - name: Download Dalamud staging
       if: "contains(github.event.head_commit.message, '[stg]')"
       run: |
-        curl https://goatcorp.github.io/dalamud-distrib/stg/latest.zip --output latest.zip
-        mkdir -p ~/Dalamud
-        unzip latest.zip -d ~/Dalamud
+          Invoke-WebRequest -Uri https://goatcorp.github.io/dalamud-distrib/stg/latest.zip -OutFile latest.zip
+          Expand-Archive -Force latest.zip "$env:AppData\XIVLauncher\addon\Hooks\dev"
         
     - name: Restore dependencies
       run: dotnet restore src
@@ -45,3 +41,12 @@ jobs:
       
     - name: Test
       run: dotnet test --no-build --verbosity normal src
+
+    - name: Extract Publish
+      run: |
+        Expand-Archive -Force ./bin/x64/Release.ILMerge/SupineSnail.JobGaugeAdjustments/latest.zip ./Artifact
+        
+    - name: Upload Build Artifact
+      uses: actions/upload-artifact@v2.2.1
+      with:
+        path: ./Artifact/*

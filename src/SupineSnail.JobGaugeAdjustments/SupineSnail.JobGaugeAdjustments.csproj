@@ -1,10 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
+        <PlatformTarget>x64</PlatformTarget>
         <TargetFramework>net5.0-windows</TargetFramework>
-        <LangVersion>default</LangVersion>
+        <LangVersion>preview</LangVersion>
         <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+        <Platforms>x64</Platforms>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+        <Configurations>Debug;Release</Configurations>
+    </PropertyGroup>
+    <PropertyGroup Label="Build">
+        <OutputType>Library</OutputType>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <AppendPlatformToOutputPath>false</AppendPlatformToOutputPath>
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     </PropertyGroup>
     
@@ -20,8 +31,8 @@
             <Private>False</Private>
         </Reference>
         <Reference Include="ImGui.Net">
-            <HintPath Condition="Exists('$(AppData)\XIVLauncher\addon\Hooks\dev')">$(AppData)\XIVLauncher\addon\Hooks\dev\ImGui.Net.dll</HintPath>
-            <HintPath Condition="Exists('/home/runner/Dalamud')">/home/runner/Dalamud/ImGui.Net.dll</HintPath>
+            <HintPath Condition="Exists('$(AppData)\XIVLauncher\addon\Hooks\dev')">$(AppData)\XIVLauncher\addon\Hooks\dev\ImGui.NET.dll</HintPath>
+            <HintPath Condition="Exists('/home/runner/Dalamud')">/home/runner/Dalamud/ImGui.NET.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="Lumina">
@@ -43,15 +54,18 @@
 
     <ItemGroup>
         <PackageReference Include="DalamudPackager" Version="2.1.5" />
+        <PackageReference Include="ILRepack" Version="2.1.0-beta1" GeneratePathProperty="true" />
         <PackageReference Include="SupineSnail.DependencyInjection" Version="1.0.0" />
         <PackageReference Include="SupineSnail.StaticWrappers" Version="1.0.0" />
         <PackageReference Include="SupineSnail.StaticWrappers.DependencyInjection" Version="1.0.0" />
     </ItemGroup>
-
-    <ItemGroup>
-      <None Update="SupineSnail.JobGaugeAdjustments.json">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-    </ItemGroup>
+    
+    <Target Name="ILRepack" AfterTargets="PostBuildEvent">
+        <ItemGroup>
+            <InputAssemblies Include="$(TargetPath)" />
+            <InputAssemblies Include="$(TargetDir)*.dll" Exclude="$(TargetPath)" />
+        </ItemGroup>
+        <Exec Command="$(PkgILRepack)\tools\ILRepack.exe /lib:$(AppData)\XIVLauncher\addon\Hooks\dev /out:$(TargetDir)..\$(Configuration).ILMerge\$(TargetFileName) @(InputAssemblies, ' ')" />
+    </Target>
 
 </Project>
