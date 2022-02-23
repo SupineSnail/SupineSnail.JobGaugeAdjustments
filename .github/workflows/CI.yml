@@ -1,0 +1,47 @@
+name: .NET CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET 5
+      uses: actions/setup-dotnet@v1.9.0
+      with:
+        dotnet-version: 5.0.x
+        
+    - name: Setup .NET 6
+      uses: actions/setup-dotnet@v1.9.0
+      with:
+        dotnet-version: 6.0.x
+        
+    - name: Download Dalamud
+      if: "!contains(github.event.head_commit.message, '[stg]')"
+      run: |
+        curl https://goatcorp.github.io/dalamud-distrib/latest.zip --output latest.zip
+        mkdir -p ~/Dalamud
+        unzip latest.zip -d ~/Dalamud
+        
+    - name: Download Dalamud staging
+      if: "contains(github.event.head_commit.message, '[stg]')"
+      run: |
+        curl https://goatcorp.github.io/dalamud-distrib/stg/latest.zip --output latest.zip
+        mkdir -p ~/Dalamud
+        unzip latest.zip -d ~/Dalamud
+        
+    - name: Restore dependencies
+      run: dotnet restore src
+      
+    - name: Build
+      run: dotnet build --no-restore src
+      
+    - name: Test
+      run: dotnet test --no-build --verbosity normal src
