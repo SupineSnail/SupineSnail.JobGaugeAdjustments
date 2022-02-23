@@ -47,8 +47,7 @@ jobs:
 
     - name: Extract Publish
       run: |
-        cd src/SupineSnail.JobGaugeAdjustments
-        Expand-Archive -Force ./bin/x64/Release.ILMerge/SupineSnail.JobGaugeAdjustments/latest.zip ./Artifact
+        Expand-Archive -Force ./src/SupineSnail.JobGaugeAdjustments/bin/x64/Release.ILMerge/SupineSnail.JobGaugeAdjustments/latest.zip ./Artifact
         
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v2.2.1
