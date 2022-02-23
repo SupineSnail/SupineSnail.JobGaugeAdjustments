@@ -3,6 +3,8 @@ name: .NET CI
 on:
   push:
     branches: [ main ]
+    tags:
+    - "v[0-9]+.[0-9]+.[0-9]+"
 
 jobs:
   build:
@@ -20,6 +22,9 @@ jobs:
       uses: actions/setup-dotnet@v1.9.0
       with:
         dotnet-version: 6.0.x
+        
+    - name: Set VERSION variable from tag
+      run: echo "VERSION=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
 
     - name: Download Dalamud
       if: "!contains(github.event.head_commit.message, '[stg]')"
@@ -37,13 +42,14 @@ jobs:
       run: dotnet restore src
       
     - name: Build
-      run: dotnet build --no-restore src
+      run: dotnet build --no-restore --configuration Release /p:Version=${VERSION} src
       
     - name: Test
-      run: dotnet test --no-build --verbosity normal src
+      run: dotnet test --no-build --verbosity normal --configuration Release /p:Version=${VERSION} src
 
     - name: Extract Publish
       run: |
+        cd src/SupineSnail.JobGaugeAdjustments
         Expand-Archive -Force ./bin/x64/Release.ILMerge/SupineSnail.JobGaugeAdjustments/latest.zip ./Artifact
         
     - name: Upload Build Artifact
