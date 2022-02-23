@@ -1,0 +1,23 @@
+[
+	{
+		"Author": "SupineSnail (Tinuviel)",
+		"Name": "Job Gauge Adjustments",
+		"Description": "Just a simple plugin to allow you to tweak parts of job gauges.",
+  		"Punchline": "Simple Job Gauges... but you can tweak them now!",
+		"InternalName": "SupineSnail.JobGaugeAdjustments",
+		"AssemblyVersion": "1.0.0.0",
+		"TestingAssemblyVersion": "1.0.0.0",
+		"RepoUrl": "https://github.com/SupineSnail/SupineSnail.JobGaugeAdjustments",
+		"ApplicableVersion": "any",
+		"DalamudApiLevel": 5,
+		"IsHide": "False",
+		"IsTestingExclusive": "False",
+		"DownloadCount": 0,
+		"LastUpdate": 0,
+		"DownloadLinkInstall": "https://github.com/SupineSnail/SupineSnail.JobGaugeAdjustments/raw/main/latest.zip",
+		"DownloadLinkTesting": "https://github.com/SupineSnail/SupineSnail.JobGaugeAdjustments/raw/main/latest.zip",
+		"DownloadLinkUpdate": "https://github.com/SupineSnail/SupineSnail.JobGaugeAdjustments/raw/main/latest.zip",
+		"IconUrl": "https://raw.githubusercontent.com/SupineSnail/SupineSnail.JobGaugeAdjustments/main/images/icon.png",
+		"Tags": ["ui", "gauges"]
+	}
+]
