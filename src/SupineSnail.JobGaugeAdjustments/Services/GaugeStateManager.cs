@@ -17,11 +17,17 @@ public class GaugeStateManager : IPluginDisposable
     private readonly Dictionary<string, List<IntPtr>> _trackedNodes = new();
         
     private unsafe delegate byte AddonOnUpdate(AtkUnitBase* atkUnitBase);
-    private readonly Dictionary<string, Hook<AddonOnUpdate>> _addonUpdateHooks = new();
+    private Hook<AddonOnUpdate> _addonUpdateHook;
+    
+    private unsafe delegate void* AddonOnFinalize(AtkUnitBase* atkUnitBase);
+    private Hook<AddonOnFinalize> _addonFinalizeHook;
+
+    private readonly Dictionary<short, string> _atkBaseIdToAddonMap = new();
 
     private uint? _currentJob;
     private short? _jobChangeUpdateCount;
     private bool _lastWasEnabled;
+    private bool _wasFinalized;
 
     public GaugeStateManager(ClientState clientState, IPluginLog pluginLog, GameGui gameGui)
     {
@@ -45,7 +51,17 @@ public class GaugeStateManager : IPluginDisposable
         {
             var job = _clientState.LocalPlayer?.ClassJob.Id;
             if (job == null)
+            {
+                if (!_currentJob.HasValue)
+                    return;
+                
+                // Handles logging out and back in
+                ResetGauges();
+                _currentJob = null;
+                _wasFinalized = false;
+                
                 return;
+            }
 
             if (_jobChangeUpdateCount.HasValue)
                 _jobChangeUpdateCount++;
@@ -57,6 +73,19 @@ public class GaugeStateManager : IPluginDisposable
                     ResetGauges();
                 else
                     UpdateGauges(job.Value, false);
+            }
+            
+            // If finalized but still has a job, probably the aesthetician so we should keep checking until it's ready again
+            if (_currentJob != null && _currentJob == job && _wasFinalized && !_jobChangeUpdateCount.HasValue)
+            {
+                if (CheckGaugesAvailable(_currentJob.Value))
+                {
+                    _pluginLog.Debug("UI is ready! Treating like new job!");
+                    
+                    // If ready, treat as if a new job change (wait appropriate frame count)
+                    ResetGauges();
+                    _currentJob = null;
+                }
             }
             
             // After a job changes, the gauges do not update instantly. We must wait a bit.
@@ -98,13 +127,17 @@ public class GaugeStateManager : IPluginDisposable
 
         _trackedNodes.Clear();
         _trackedNodeValues.Clear();
-
-        foreach (var hook in _addonUpdateHooks.Values)
-        {
-            hook?.Disable();
-        }
-
-        _addonUpdateHooks.Clear();
+        
+        _pluginLog.Debug("Removing Update Hook");
+        _addonUpdateHook?.Disable();
+        _addonUpdateHook = null;
+        
+        _pluginLog.Debug("Removing Finalize Hook");
+        _addonFinalizeHook?.Disable();
+        _addonFinalizeHook = null;
+        
+        _atkBaseIdToAddonMap.Clear();
+        _wasFinalized = false;
     }
 
     private unsafe void UpdateGauges(uint job, bool forceReset)
@@ -124,9 +157,11 @@ public class GaugeStateManager : IPluginDisposable
             return;
         }
         
-        _pluginLog.Debug("Job found. Proceeding to update gauges.");
+        _pluginLog.Debug("Job found.");
         if (forceReset)
             _pluginLog.Debug("Resetting Gauge to default state.");
+        else
+            _pluginLog.Debug("Updating Gauges");
             
         var reset = forceReset || !jobConfig.Enabled;
 
@@ -136,9 +171,11 @@ public class GaugeStateManager : IPluginDisposable
             if (hudAddon == null)
             {
                 _pluginLog.Debug($"Could not get base addon {addonName} for job {job} in render.");
-                return;
+                continue;
             }
-            HookAddonUpdate(addonName, hudAddon);
+
+            if (!reset)
+                AttachAddonHooks(addonName, hudAddon);
 
             foreach (var componentPart in components)
             {
@@ -162,6 +199,22 @@ public class GaugeStateManager : IPluginDisposable
                 }
             }
         }
+    }
+
+    private unsafe bool CheckGaugesAvailable(uint job)
+    {
+        var map = JobMap.GetJobMap(job);
+        if (map == null)
+        {
+            _pluginLog.Debug($"Job with Id {job} not found in map. Cannot check.");
+            return false;
+        }
+
+        var addonName = map.Addons.First().Key;
+        if (string.IsNullOrWhiteSpace(addonName))
+            return false;
+        
+        return GetUnitBase(addonName) != null;
     }
 
     private unsafe void UpdateNode(string nodeKey, AtkResNode* node, GaugeComponentConfig componentConfig, bool reset)
@@ -214,24 +267,74 @@ public class GaugeStateManager : IPluginDisposable
 
     private unsafe AtkUnitBase* GetUnitBase(string name) => (AtkUnitBase*) _gameGui.GetAddonByName(name, 1);
 
-    private unsafe void HookAddonUpdate(string addonName, AtkUnitBase* hudAddon)
+    private unsafe void AttachAddonHooks(string addonName, AtkUnitBase* hudAddon)
     {
-        if (hudAddon == null || _addonUpdateHooks.ContainsKey(addonName))
+        if (hudAddon == null)
             return;
 
-        _addonUpdateHooks[addonName] = new Hook<AddonOnUpdate>(new IntPtr(hudAddon->AtkEventListener.vfunc[39]),
-            atkunitbase => OnUpdate(addonName, atkunitbase));
-        _addonUpdateHooks[addonName]?.Enable();
-    }
-
-    private unsafe byte OnUpdate(string addonName, AtkUnitBase* atkunitbase)
-    {
-        var result = _addonUpdateHooks[addonName].Original(atkunitbase);
-        if (_currentJob.HasValue && !_jobChangeUpdateCount.HasValue)
+        if (!_atkBaseIdToAddonMap.ContainsKey(hudAddon->ID))
+            _atkBaseIdToAddonMap[hudAddon->ID] = addonName;
+        
+        // Only one hook is needed, all updates / finalizes go through the same hook
+        if (_addonUpdateHook == null)
         {
-            UpdateTrackedNodes(addonName);
+            _pluginLog.Debug("Attaching Update");
+            _addonUpdateHook = new Hook<AddonOnUpdate>(new IntPtr(hudAddon->AtkEventListener.vfunc[39]), OnUpdate);
+            _pluginLog.Debug("Update Enable");
+            _addonUpdateHook?.Enable();
         }
 
+        if (_addonFinalizeHook == null)
+        {
+            _pluginLog.Debug("Attaching Finalize");
+            _addonFinalizeHook = new Hook<AddonOnFinalize>(new IntPtr(hudAddon->AtkEventListener.vfunc[38]), OnFinalize);
+            _pluginLog.Debug("Finalize Enable");
+            _addonFinalizeHook?.Enable();
+        }
+    }
+
+    private unsafe byte OnUpdate(AtkUnitBase* atkunitbase)
+    {
+        var result = _addonUpdateHook.Original(atkunitbase);
+        
+        // Same hook for all updates, make sure we're only triggering for the current job
+        if (!_atkBaseIdToAddonMap.ContainsKey(atkunitbase->ID))
+            return result;
+        
+        if (_currentJob.HasValue && !_jobChangeUpdateCount.HasValue)
+        {
+            UpdateTrackedNodes(_atkBaseIdToAddonMap[atkunitbase->ID]);
+        }
+
+        return result;
+    }
+
+    private unsafe void* OnFinalize(AtkUnitBase* atkunitbase)
+    {
+        // Same hook for all finalize, make sure we're only triggering for the current job (switch will remove previous)
+        if (!_atkBaseIdToAddonMap.ContainsKey(atkunitbase->ID))
+            return _addonFinalizeHook.Original(atkunitbase);
+
+        var addonName = _atkBaseIdToAddonMap[atkunitbase->ID];
+        _pluginLog.Debug("Finalize for addon " + atkunitbase->ID + " - " + addonName);
+
+        _atkBaseIdToAddonMap.Remove(atkunitbase->ID);
+        var result = _addonFinalizeHook.Original(atkunitbase);
+        if (_atkBaseIdToAddonMap.Count == 0)
+        {
+            _pluginLog.Debug("Removing Update Hook");
+            _addonUpdateHook?.Disable();
+            _addonUpdateHook = null;
+
+            _pluginLog.Debug("Removing Finalize Hook");
+            _addonFinalizeHook?.Disable();
+            _addonFinalizeHook = null;
+            
+            // If we got this far, the addon is removing for logout or for aesthetician
+            // Logout will be handled by detecting job change. Aesthetician will be detected with checking if the addon becomes available
+            _pluginLog.Debug("Checking each loop if job is ready for UI");
+            _wasFinalized = true;
+        }
         return result;
     }
 
