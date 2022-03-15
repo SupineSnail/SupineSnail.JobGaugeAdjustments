@@ -232,6 +232,8 @@ public class GaugeStateManager : IPluginDisposable
                 node->Color.A = 255;
 
             node->SetPositionFloat(tracking.DefaultX + tracking.AdditionalX, tracking.DefaultY + tracking.AdditionalY);
+            if (Math.Abs(node->Rotation - tracking.DefaultRotation) > 0.01)
+                ApplyNodeRotationRad(node, tracking.DefaultRotation);
             return;
         }
 
@@ -243,9 +245,29 @@ public class GaugeStateManager : IPluginDisposable
         var intendedX = tracking.DefaultX + tracking.AdditionalX + componentConfig.OffsetX;
         var intendedY = tracking.DefaultY + tracking.AdditionalY + componentConfig.OffsetY;
 
+        // Undo additional X movement if left aligned
+        if (componentConfig.LeftAlign)
+            intendedX -= tracking.AdditionalX;
+        
         node->SetPositionFloat(intendedX, intendedY);
         tracking.LastX = intendedX;
         tracking.LastY = intendedY;
+
+        var radRotation = GetRadian(componentConfig.Rotation);
+        if (Math.Abs(node->Rotation - radRotation) > 0.01)
+            ApplyNodeRotationRad(node, radRotation);
+    }
+
+    private float GetRadian(int deg) => (float) (Math.PI / 180) * deg;
+
+    private unsafe void ApplyNodeRotationRad(AtkResNode* node, float rad)
+    {
+        _pluginLog.Debug($"Applying rotation {rad}R");
+        node->Rotation = rad;
+        if ((node->Flags_2 & 0x4) != 0x4)
+            node->Flags_2 |= 0x4;
+        if ((node->Flags_2 & 0x1) != 0x1)
+            node->Flags_2 |= 0x1;
     }
 
     private unsafe GaugeComponentTracking GetTrackedNode(string nodeKey, AtkResNode* node) {
@@ -258,7 +280,8 @@ public class GaugeStateManager : IPluginDisposable
         tracking = new GaugeComponentTracking
         {
             DefaultX = (int) node->X,
-            DefaultY = (int) node->Y
+            DefaultY = (int) node->Y,
+            DefaultRotation = (int) node->Rotation
         };
         _trackedNodeValues[nodeKey] = tracking;
 
@@ -386,8 +409,17 @@ public class GaugeStateManager : IPluginDisposable
 
         var jobConfig = GetJobConfig(_currentJob!.Value);
         var addonPart = map.Addons[addonName].FirstOrDefault(p => p.NodeIds.Contains(node->NodeID));
-        if (jobConfig.Components[addonPart!.Key].Hide && node->Color.A != 0)
+        var config = jobConfig.Components[addonPart!.Key];
+        if (config.Hide && node->Color.A != 0)
             node->Color.A = 0;
+        
+        // If we are left aligning, undo shift and reset lastX so we can detect next shift
+        if (config.LeftAlign && xDiff != 0)
+        {
+            _pluginLog.Debug("Undoing X shift because this element is left aligned");
+            node->SetPositionFloat(node->X - xDiff, node->Y);
+            tracking.LastX = (int) node->X;
+        }
     }
 
     private void EnsureConfigurationSetup()
