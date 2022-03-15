@@ -151,7 +151,7 @@ public class ConfigurationWindow : Window
             hasChanged |=
                 DrawEditorForPiece(
                     _localization["GaugePiece_" + job.Name + "_" + components[i].Key, components[i].ConfigName],
-                    componentConfig);
+                    componentConfig, components[i]);
 
             if (i < components.Length - 1)
                 ImGui.Separator();
@@ -160,7 +160,8 @@ public class ConfigurationWindow : Window
         return hasChanged;
     }
 
-    private bool DrawEditorForPiece(string label, GaugeComponentConfig gaugeConfig) {
+    private bool DrawEditorForPiece(string label, GaugeComponentConfig gaugeConfig, AddonComponentPart componentPart) 
+    {
         var hasChanged = false;
             
         var xAvail = ImGui.GetContentRegionAvail().X;
@@ -169,10 +170,13 @@ public class ConfigurationWindow : Window
 
         ImGui.SetCursorPosX(Math.Min(320 * ImGuiHelpers.GlobalScale, xAvail - 30 * ImGuiHelpers.GlobalScale));
         ImGui.PushFont(UiBuilder.IconFont);
-        if (ImGui.Button($"{(char) FontAwesomeIcon.CircleNotch}##resetOffsetX_{label}")) {
+        if (ImGui.Button($"{(char) FontAwesomeIcon.CircleNotch}##resetOffsetX_{label}")) 
+        {
             gaugeConfig.OffsetX = 0;
             gaugeConfig.OffsetY = 0;
+            gaugeConfig.Rotation = 0;
             gaugeConfig.Hide = false;
+            gaugeConfig.LeftAlign = false;
             hasChanged = true;
         }
         ImGui.PopFont();
@@ -192,6 +196,23 @@ public class ConfigurationWindow : Window
             
         ImGui.SetNextItemWidth(150 * ImGuiHelpers.GlobalScale);
         hasChanged |= ImGui.InputInt($"##offsetY_{label}", ref gaugeConfig.OffsetY);
+
+        if (componentPart.CanRotate)
+        {
+            ImGui.Text(_localization["Rotation", "Rotation: "]);
+            ImGui.SameLine();
+
+            ImGui.SetNextItemWidth(145 * ImGuiHelpers.GlobalScale);
+            hasChanged |= ImGui.DragInt($"##rotation_{label}", ref gaugeConfig.Rotation, 1, -180, 180, "%d", ImGuiSliderFlags.AlwaysClamp);
+        }
+
+        if (componentPart.CanLeftAlign)
+        {
+            hasChanged |= ImGui.Checkbox(_localization["Left_Align", "Left Align", "Left Align Checkbox Text"] + $"###leftAlign_{label}", ref gaugeConfig.LeftAlign);
+            if (ImGui.IsItemHovered())
+                ImGui.SetTooltip(_localization["Left_Align_Tooltip", "Will left align text instead of the default right alignment."]);
+        }
+        
         return hasChanged;
     }
 

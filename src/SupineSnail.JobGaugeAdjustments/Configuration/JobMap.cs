@@ -32,7 +32,7 @@ internal static class JobMap
                             new[]
                             {
                                 new AddonComponentPart("Oath", "Oath Gauge", 18),
-                                new AddonComponentPart("OathText", "Oath Gauge Value", 17),
+                                new AddonComponentPart("OathText", "Oath Gauge Value", false, true, 17),
                                 new AddonComponentPart("IronWill", "Iron Will Icon", 15)
                             }
                         }
@@ -60,7 +60,7 @@ internal static class JobMap
                             "JobHudMNK0",
                             new[]
                             {
-                                new AddonComponentPart("Master", "Master Timeout", 39),
+                                new AddonComponentPart("Master", "Master Timeout", false, true, 39),
                                 new AddonComponentPart("MChakra", "Master Chakras", 33),
                                 new AddonComponentPart("Nadi", "Nadi", 25),
                             }
@@ -80,7 +80,7 @@ internal static class JobMap
                             {
                                 new AddonComponentPart("Defiance", "Defiance Icon", 14),
                                 new AddonComponentPart("Beast", "Beast Gauge", 17),
-                                new AddonComponentPart("BeastValue", "Beast Gauge Value", 16),
+                                new AddonComponentPart("BeastValue", "Beast Gauge Value", false, true, 16),
                             }
                         }
                     }
@@ -97,7 +97,7 @@ internal static class JobMap
                             new[]
                             {
                                 new AddonComponentPart("LotD", "LotD Bar", 43),
-                                new AddonComponentPart("LotDValue", "LotD Bar Value", 42),
+                                new AddonComponentPart("LotDValue", "LotD Bar Value", false, true, 42),
                                 new AddonComponentPart("Gaze1", "Gaze 1", 36),
                                 new AddonComponentPart("Gaze2", "Gaze 2", 37),
                                 new AddonComponentPart("Firstmind1", "Firstmind 1", 39),
@@ -118,14 +118,14 @@ internal static class JobMap
                             new[]
                             {
                                 new AddonComponentPart("SongGauge", "Song Gauge", 99),
-                                new AddonComponentPart("SongGaugeValue", "Song Gauge Value", 97),
+                                new AddonComponentPart("SongGaugeValue", "Song Gauge Value", false, true, 97),
                                 new AddonComponentPart("SongName", "Song Name", 76),
                                 new AddonComponentPart("Repertoire1", "Repertoire 1", 90, 94),
                                 new AddonComponentPart("Repertoire2", "Repertoire 2", 91, 95),
                                 new AddonComponentPart("Repertoire3", "Repertoire 3", 92, 96),
                                 new AddonComponentPart("Repertoire4", "Repertoire 4", 93),
                                 new AddonComponentPart("SoulVoiceBar", "Soul Voice Bar", 87),
-                                new AddonComponentPart("SoulVoiceText", "Soul Voice Text", 86),
+                                new AddonComponentPart("SoulVoiceText", "Soul Voice Text", false, true, 86),
                                 new AddonComponentPart("MageCoda", "Mage's Coda", 79, 82),
                                 new AddonComponentPart("ArmyCoda", "Army's Coda", 80, 84),
                                 new AddonComponentPart("WandererCoda", "Wanderer's Coda", 71, 83)
@@ -166,7 +166,7 @@ internal static class JobMap
                             "JobHudBLM0",
                             new[]
                             {
-                                new AddonComponentPart("CountdownText", "Countdown Text", 36),
+                                new AddonComponentPart("CountdownText", "Countdown Text", false, true, 36),
                                 new AddonComponentPart("Ele1", "Ice/Fire 1", 42),
                                 new AddonComponentPart("Ele2", "Ice/Fire 2", 43),
                                 new AddonComponentPart("Ele3", "Ice/Fire 3", 44),
@@ -194,11 +194,11 @@ internal static class JobMap
                             new[]
                             {
                                 new AddonComponentPart("TranceGauge", "Trance Gauge", 56),
-                                new AddonComponentPart("TranceCountdown", "Trance Countdown", 55),
+                                new AddonComponentPart("TranceCountdown", "Trance Countdown", false, true, 55),
                                 new AddonComponentPart("RubyArcanum", "Ruby Arcanum", 51),
                                 new AddonComponentPart("TopazArcanum", "Topaz Arcanum", 52),
                                 new AddonComponentPart("EmeraldArcanum", "Emerald Arcanum", 53),
-                                new AddonComponentPart("PetCountdown", "Pet Countdown", 50),
+                                new AddonComponentPart("PetCountdown", "Pet Countdown", false, true, 50),
                                 new AddonComponentPart("PetIcon", "Pet Icon", 49),
                                 new AddonComponentPart("BahamutPhoenix", "Bahamut/Phoenix", 47),
                             }
@@ -225,9 +225,9 @@ internal static class JobMap
                             new[]
                             {
                                 new AddonComponentPart("FaireGauge", "Faire Gauge", 32),
-                                new AddonComponentPart("FaireGaugeValue", "Faire Gauge Value", 31),
+                                new AddonComponentPart("FaireGaugeValue", "Faire Gauge Value", false, true, 31),
                                 new AddonComponentPart("SeraphIcon", "Seraph Icon", 29),
-                                new AddonComponentPart("SeraphCountdown", "Seraph Countdown", 30),
+                                new AddonComponentPart("SeraphCountdown", "Seraph Countdown", false, true, 30),
                             }
                         },
                         {
@@ -253,7 +253,7 @@ internal static class JobMap
                             new[]
                             {
                                 new AddonComponentPart("HutonBar", "Huton Bar", 20),
-                                new AddonComponentPart("HutonBarValue", "Huton Bar Value", 19),
+                                new AddonComponentPart("HutonBarValue", "Huton Bar Value", false, true, 19),
                                 new AddonComponentPart("HutonClockIcon", "Huton Clock Icon", 18)
                             }
                         },
@@ -262,7 +262,7 @@ internal static class JobMap
                             new[]
                             {
                                 new AddonComponentPart("NinkiGauge", "Ninki Gauge", 19),
-                                new AddonComponentPart("NinkiGaugeValue", "Ninki Gauge Value", 18)
+                                new AddonComponentPart("NinkiGaugeValue", "Ninki Gauge Value", false, true, 18)
                             }
                         }
                     }
@@ -279,11 +279,11 @@ internal static class JobMap
                             new[]
                             {
                                 new AddonComponentPart("HeatGauge", "Heat Gauge", 38),
-                                new AddonComponentPart("HeatValue", "Heat Gauge Value", 37),
+                                new AddonComponentPart("HeatValue", "Heat Gauge Value", false, true, 37),
                                 new AddonComponentPart("OverheatIcon", "Overheat Icon", 36),
-                                new AddonComponentPart("OverheatCountdown", "Overheat Countdown", 35),
+                                new AddonComponentPart("OverheatCountdown", "Overheat Countdown", false, true, 35),
                                 new AddonComponentPart("BatteryGauge", "Battery Gauge", 43),
-                                new AddonComponentPart("BatteryValue", "Battery Value", 42),
+                                new AddonComponentPart("BatteryValue", "Battery Value", false, true, 42),
                                 new AddonComponentPart("QueenIcon", "Queen Icon", 41),
                                 new AddonComponentPart("QueenCountdown", "QueenCountdown", 40),
                             }
@@ -303,7 +303,7 @@ internal static class JobMap
                             {
                                 new AddonComponentPart("GritIcon", "Grit Icon", 15),
                                 new AddonComponentPart("BloodGauge", "Blood Gauge", 18),
-                                new AddonComponentPart("BloodGaugeValue", "Blood Gauge Value", 17)
+                                new AddonComponentPart("BloodGaugeValue", "Blood Gauge Value", false, true, 17)
                             }
                         },
                         {
@@ -311,10 +311,10 @@ internal static class JobMap
                             new[]
                             {
                                 new AddonComponentPart("DarksideGauge", "Darkside Gauge", 27),
-                                new AddonComponentPart("DarksideGaugeValue", "Darkside Gauge Value", 26),
+                                new AddonComponentPart("DarksideGaugeValue", "Darkside Gauge Value", false, true, 26),
                                 new AddonComponentPart("DarkArts", "Dark Arts", 24),
                                 new AddonComponentPart("LivingShadow", "Living Shadow", 22),
-                                new AddonComponentPart("LivingShadowValue", "Living Shadow Value", 23)
+                                new AddonComponentPart("LivingShadowValue", "Living Shadow Value", false, true, 23)
                             }
                         }
                     }
@@ -362,7 +362,7 @@ internal static class JobMap
                             new[]
                             {
                                 new AddonComponentPart("Kenki", "Kenki Gauge", 31),
-                                new AddonComponentPart("KenkiValue", "Kenki Value", 30),
+                                new AddonComponentPart("KenkiValue", "Kenki Value", false, true, 30),
                                 new AddonComponentPart("Meditation1", "Meditation 1", 26),
                                 new AddonComponentPart("Meditation2", "Meditation 2", 27),
                                 new AddonComponentPart("Meditation3", "Meditation 3", 28),
@@ -382,9 +382,9 @@ internal static class JobMap
                             new[]
                             {
                                 new AddonComponentPart("WhiteManaBar", "White Mana Bar", 38),
-                                new AddonComponentPart("WhiteManaValue", "White Mana Value", 25),
+                                new AddonComponentPart("WhiteManaValue", "White Mana Value", false, true, 25),
                                 new AddonComponentPart("BlackManaBar", "Black Mana Bar", 39),
-                                new AddonComponentPart("BlackManaValue", "Black Mana Value", 26),
+                                new AddonComponentPart("BlackManaValue", "Black Mana Value", false, true, 26),
                                 new AddonComponentPart("StatusIndicator", "Status Indicator", 35),
                                 new AddonComponentPart("ManaStack1", "Mana Stack 1", 28),
                                 new AddonComponentPart("ManaStack2", "Mana Stack 2", 29),
@@ -461,7 +461,7 @@ internal static class JobMap
                                 new AddonComponentPart("Shroud4", "Lemure Shroud 4", 18),
                                 new AddonComponentPart("Shroud5", "Lemure Shroud 5", 17),
                                 new AddonComponentPart("Enshroud", "Enshroud Icon", 15),
-                                new AddonComponentPart("EnshroudIcon", "Enshroud Countdown", 16)
+                                new AddonComponentPart("EnshroudIcon", "Enshroud Countdown", false, true, 16)
                             }
                         },
                         {
@@ -469,9 +469,9 @@ internal static class JobMap
                             new[]
                             {
                                 new AddonComponentPart("ShroudGauge", "Shroud Gauge", 45),
-                                new AddonComponentPart("ShroudValue", "Shroud Gauge Value", 44),
+                                new AddonComponentPart("ShroudValue", "Shroud Gauge Value", false, true, 44),
                                 new AddonComponentPart("DeathGauge", "Death Gauge", 42),
-                                new AddonComponentPart("DeathValue", "Death Gauge Value", 41)
+                                new AddonComponentPart("DeathValue", "Death Gauge Value", false, true, 41)
                             }
                         }
                     }
