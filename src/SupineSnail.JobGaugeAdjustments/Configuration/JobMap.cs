@@ -128,7 +128,7 @@ internal static class JobMap
                                 new AddonComponentPart("SoulVoiceText", "Soul Voice Text", false, true, 86),
                                 new AddonComponentPart("MageCoda", "Mage's Coda", 79, 82),
                                 new AddonComponentPart("ArmyCoda", "Army's Coda", 80, 84),
-                                new AddonComponentPart("WandererCoda", "Wanderer's Coda", 71, 83)
+                                new AddonComponentPart("WandererCoda", "Wanderer's Coda", 81, 83)
                             }
                         }
                     }
@@ -270,7 +270,7 @@ internal static class JobMap
             },
             {
                 31,
-                new JobGaugeMap(31, "Mechanist")
+                new JobGaugeMap(31, "Machinist")
                 {
                     Addons = new()
                     {
