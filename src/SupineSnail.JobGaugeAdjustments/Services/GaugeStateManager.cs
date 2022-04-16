@@ -22,7 +22,7 @@ public class GaugeStateManager : IPluginDisposable
     private unsafe delegate void* AddonOnFinalize(AtkUnitBase* atkUnitBase);
     private Hook<AddonOnFinalize> _addonFinalizeHook;
 
-    private readonly Dictionary<short, string> _atkBaseIdToAddonMap = new();
+    private readonly Dictionary<ushort, string> _atkBaseIdToAddonMap = new();
 
     private uint? _currentJob;
     private short? _jobChangeUpdateCount;

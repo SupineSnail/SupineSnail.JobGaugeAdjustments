@@ -53,7 +53,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="DalamudPackager" Version="2.1.5" />
+        <PackageReference Include="DalamudPackager" Version="2.1.6" />
         <PackageReference Include="ILRepack" Version="2.1.0-beta1" GeneratePathProperty="true" />
         <PackageReference Include="SupineSnail.DependencyInjection" Version="1.0.0" />
         <PackageReference Include="SupineSnail.StaticWrappers" Version="1.0.0" />
