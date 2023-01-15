@@ -9,7 +9,7 @@
 		"TestingAssemblyVersion": "1.0.0.0",
 		"RepoUrl": "https://github.com/SupineSnail/SupineSnail.JobGaugeAdjustments",
 		"ApplicableVersion": "any",
-		"DalamudApiLevel": 5,
+		"DalamudApiLevel": 8,
 		"IsHide": "False",
 		"IsTestingExclusive": "False",
 		"DownloadCount": 0,
