@@ -4,4 +4,4 @@ description: |-
   Just a simple plugin to allow you to tweak parts of job gauges.
 punchline: Simple Job Gauges... but you can tweak them now!
 repo_url: https://github.com/SupineSnail/SupineSnail.JobGaugeAdjustments
-dalamud_api_level: 6
+dalamud_api_level: 8
